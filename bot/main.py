@@ -5,6 +5,7 @@ import logging
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import CallbackQuery, Message
 
 from bot.config import load_settings
@@ -37,6 +38,12 @@ async def main() -> None:
     @dispatcher.callback_query(F.data.startswith("goto:"))
     async def callback(callback_query: CallbackQuery) -> None:
         await callback_query.answer()
+        if not callback_query.message:
+            return
+        try:
+            await callback_query.message.delete()
+        except TelegramBadRequest:
+            logging.exception("Failed to delete message with inline keyboard")
         await engine.handle_callback(
             bot,
             callback_query.message.chat.id,
@@ -53,4 +60,3 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
-

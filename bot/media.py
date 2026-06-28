@@ -32,11 +32,8 @@ def resolve_path(path: str, images_dir: Path, videos_dir: Path) -> Path:
     candidate = Path(path)
     if candidate.is_absolute():
         return candidate
-    if path.startswith("images/"):
-        return candidate
-    if path.startswith("videos/"):
+    if path.startswith(("images/", "videos/", "files/")):
         return candidate
     if candidate.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}:
         return images_dir / candidate
     return videos_dir / candidate
-

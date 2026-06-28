@@ -13,3 +13,6 @@ def test_videos_data_references_existing_files() -> None:
     assert "videos/dykhalka.mp4" in text
     assert Path("videos/dykhalka.mp4").exists()
 
+
+def test_guide_pdf_exists() -> None:
+    assert Path("files/guide.pdf").exists()

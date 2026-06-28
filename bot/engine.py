@@ -65,9 +65,11 @@ class FlowEngine:
                 text=text,
                 reply_markup=build_keyboard(node.get("buttons")),
                 disable_web_page_preview=True,
+                parse_mode=node.get("parse_mode"),
             )
 
         await send_media(bot, chat_id, node.get("media", []), self.paths.images_dir, self.paths.videos_dir)
+        self._schedule_timeout(bot, chat_id, user_id, node_id, node)
 
         delay = node.get("delay_seconds")
         next_node = node.get("next")
@@ -76,3 +78,24 @@ class FlowEngine:
             await self.send_node(bot, chat_id, user_id, next_node)
         elif next_node and not node.get("buttons") and not node.get("input_handler") and not node.get("text_target"):
             await self.send_node(bot, chat_id, user_id, next_node)
+
+    def _schedule_timeout(self, bot: Bot, chat_id: int, user_id: int, node_id: str, node: dict) -> None:
+        timeout = node.get("timeout_seconds")
+        target = node.get("timeout_target")
+        if not isinstance(timeout, int) or not target:
+            return
+        asyncio.create_task(self._send_timeout_node(bot, chat_id, user_id, node_id, timeout, target))
+
+    async def _send_timeout_node(
+        self,
+        bot: Bot,
+        chat_id: int,
+        user_id: int,
+        source_node_id: str,
+        timeout: int,
+        target_node_id: str,
+    ) -> None:
+        await asyncio.sleep(timeout)
+        state = self.storage.get(user_id)
+        if state and state.current_node == source_node_id:
+            await self.send_node(bot, chat_id, user_id, target_node_id)

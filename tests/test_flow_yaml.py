@@ -50,6 +50,16 @@ def test_kk20_routes_to_correct_and_incorrect_nodes() -> None:
     assert kk20["incorrect"] == "kk26"
 
 
+def test_ignore_timeouts_are_configured() -> None:
+    flow = load_flow(FLOW_PATH)
+    assert flow.get("kk1")["timeout_seconds"] == 60
+    assert flow.get("kk1")["timeout_target"] == "kk6"
+    assert flow.get("kk6")["timeout_seconds"] == 60
+    assert flow.get("kk6")["timeout_target"] == "kk20"
+    assert flow.get("kk20")["timeout_seconds"] == 60
+    assert flow.get("kk20")["timeout_target"] == "kk28"
+
+
 def test_urls_keep_tracking_parameters() -> None:
     flow = load_flow(FLOW_PATH)
     urls = [
@@ -81,3 +91,9 @@ def test_media_paths_exist() -> None:
     for path in media_paths:
         assert path.exists(), path
 
+
+def test_kk1_sends_guide_pdf_as_document() -> None:
+    flow = load_flow(FLOW_PATH)
+    kk1_media = flow.get("kk1")["media"]
+    assert kk1_media == [{"type": "document", "path": "files/guide.pdf"}]
+    assert Path("files/guide.pdf").exists()

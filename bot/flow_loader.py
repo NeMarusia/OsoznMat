@@ -67,6 +67,11 @@ def validate_flow(flow: Flow) -> list[str]:
             target = node.get(field)
             if isinstance(target, str) and target not in flow.nodes:
                 errors.append(f"{node_id}: {field} points to missing node {target!r}")
+        timeout_target = node.get("timeout_target")
+        if isinstance(timeout_target, str) and timeout_target not in flow.nodes:
+            errors.append(f"{node_id}: timeout_target points to missing node {timeout_target!r}")
+        if "timeout_target" in node and not isinstance(node.get("timeout_seconds"), int):
+            errors.append(f"{node_id}: timeout_target requires integer timeout_seconds")
 
         media = node.get("media", [])
         if media is not None and not isinstance(media, list):

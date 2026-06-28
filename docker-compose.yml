@@ -1,0 +1,12 @@
+services:
+  bot:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ./storage:/app/storage
+      - ./images:/app/images:ro
+      - ./videos:/app/videos:ro
+      - ./data:/app/data:ro
+    restart: unless-stopped
+

@@ -1,0 +1,2 @@
+"""OsoznMat Telegram bot."""
+

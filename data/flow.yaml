@@ -11,7 +11,7 @@ nodes:
       - type: document
         path: files/guide.pdf
     timeout_seconds: 60
-    timeout_target: kk6
+    timeout_target: kk17
     buttons:
       - text: 1 триместр
         target: kk19
@@ -33,7 +33,7 @@ nodes:
 
       Сегодня поделюсь парой советов, но сначала — небольшой опрос. Что волнует тебя больше?
     timeout_seconds: 60
-    timeout_target: kk20
+    timeout_target: kk18
     buttons:
       - text: Утренняя тошнота
         target: kk10
@@ -146,7 +146,7 @@ nodes:
     correct: kk25
     incorrect: kk26
     timeout_seconds: 60
-    timeout_target: kk28
+    timeout_target: kk27
 
   kk24:
     id: kk24
@@ -156,8 +156,9 @@ nodes:
 
   kk25:
     id: kk25
+    parse_mode: Markdown
     text: |-
-      Вы молодец и ответили абсолютно верно. Видно, что вы уже хорошо подготовлены и крайне ответственно относитесь к родам. Если вы хотите подготовиться еще лучше вам может помочь мой курс по подготовке к родам (https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day2). А ниже мы разбираем каждый из вариантов ответов подробнее.
+      Вы молодец и ответили абсолютно верно. Видно, что вы уже хорошо подготовлены и крайне ответственно относитесь к родам. Если вы хотите подготовиться еще лучше вам может помочь мой [курс](https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day2) по подготовке к родам. А ниже мы разбираем каждый из вариантов ответов подробнее.
 
       Утверждение 1. Верно. Разбор: Начиная с 25 недели матка становится достаточно тяжелой. Если лечь на спину, она пережимает нижнюю полую вену, что может вызвать головокружение и ухудшить кровоток. Так что спим на боку и обеспечиваем себе комфортный отдых.
 
@@ -172,6 +173,7 @@ nodes:
 
   kk26:
     id: kk26
+    parse_mode: Markdown
     text: |-
       Не совсем верно, но не стоит переживать. Давайте разберемся вместе!
 
@@ -185,7 +187,7 @@ nodes:
 
       Утверждение 5. Ошибочно. Разбор: Старый миф о питании за двоих давно пора оставить в прошлом. Избыток калорий не пойдет на пользу ни женщине, ни ребенку, есть нужно качественно и разнообразно. То же самое касается бандажа. Его носят только по показаниям и рекомендациям врача. Если носить его постоянно без необходимости, мышцы спины и живота могут просто отвыкнуть работать самостоятельно.
 
-      Если вы хотите быть уверенной,что не допустите ошибок в дальнейшем, я с радостью помогу вам на курсе по подготовке к родам. (https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day2)
+      Если вы хотите быть уверенной,что не допустите ошибок в дальнейшем, я с радостью помогу вам на [курсе](https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day2) по подготовке к родам.
     next: kk27
 
   kk27:
@@ -196,10 +198,11 @@ nodes:
 
   kk28:
     id: kk28
+    parse_mode: Markdown
     text: |-
       Беременность - тревожное время. Важно вовремя найти момент для себя среди забот. Сегодня отправляем вам небольшое дыхательное упражнение. Расслабьтесь и уделите себе минуту.
 
-      Больше инструментов для борьбы с тревогой вы сможете знать при прохождении курса по подготовке к родам. (https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day3)
+      Больше инструментов для борьбы с тревогой вы сможете знать при прохождении [курса](https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day3) по подготовке к родам.
     media:
       - type: video
         path: videos/dykhalka.mp4
@@ -239,13 +242,11 @@ nodes:
 
   kk31:
     id: kk31
+    parse_mode: Markdown
     text: |-
       🌙 Отлично!
 
-      Вы можете выбрать подходящий вам тариф и записаться на сайте!
-    buttons:
-      - text: Записаться
-        url: https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day5&utm_term=zapis
+      Вы можете выбрать подходящий вам тариф и записаться на [сайте](https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day5&utm_term=zapis)!
 
   kk32:
     id: kk32
@@ -266,29 +267,29 @@ nodes:
 
   kk33:
     id: kk33
+    parse_mode: Markdown
     text: |-
       Понимаю, объемный курс, это формат, который подходит далеко не всем.
 
       Специально для вас я провожу частные консультации и готовлю гайды. Познакомиться со всеми услугами вы можете на основном сайте центра.
-    buttons:
-      - text: Познакомиться с услугами
-        url: https://osoznannoe-materinstvo.ru/?ysclid=mqy45sltgq415730799&utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day5&utm_term=zapis
+
+      [Познакомиться с услугами](https://osoznannoe-materinstvo.ru/?ysclid=mqy45sltgq415730799&utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day5&utm_term=zapis)
 
   kk34:
     id: kk34
+    parse_mode: Markdown
     text: |-
       Специально для таких ситуаций на основном сайте центра "Осознанное материнство" я подготовила текстовые гайды и бесплатные статьи. Возможно в них вы сможете найти ответы на часть вопросов.
-    buttons:
-      - text: Перейти на сайт
-        url: https://osoznannoe-materinstvo.ru/?ysclid=mqy45sltgq415730799&utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day5&utm_term=zapis
+
+      [Перейти на сайт](https://osoznannoe-materinstvo.ru/?ysclid=mqy45sltgq415730799&utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day5&utm_term=zapis)
 
   kk35:
     id: kk35
+    parse_mode: Markdown
     text: |-
       Не волнуйтесь, все занятия будут записаны. Даже если вы пропустите часть из них, вы сможете посмотреть уроки позже.
-    buttons:
-      - text: Записаться на курс
-        url: https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day5&utm_term=video
+
+      [Записаться на курс](https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day5&utm_term=video)
 
   kk36:
     id: kk36

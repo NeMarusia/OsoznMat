@@ -75,7 +75,9 @@ class FlowEngine:
         next_node = node.get("next")
         if isinstance(delay, int) and next_node:
             await asyncio.sleep(delay)
-            await self.send_node(bot, chat_id, user_id, next_node)
+            state = self.storage.get(user_id)
+            if state and state.current_node == node_id:
+                await self.send_node(bot, chat_id, user_id, next_node)
         elif next_node and not node.get("buttons") and not node.get("input_handler") and not node.get("text_target"):
             await self.send_node(bot, chat_id, user_id, next_node)
 

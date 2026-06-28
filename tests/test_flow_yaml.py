@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 from urllib.parse import parse_qs, urlparse
 
 from bot.flow_loader import load_flow, validate_flow
@@ -53,21 +54,16 @@ def test_kk20_routes_to_correct_and_incorrect_nodes() -> None:
 def test_ignore_timeouts_are_configured() -> None:
     flow = load_flow(FLOW_PATH)
     assert flow.get("kk1")["timeout_seconds"] == 60
-    assert flow.get("kk1")["timeout_target"] == "kk6"
+    assert flow.get("kk1")["timeout_target"] == "kk17"
     assert flow.get("kk6")["timeout_seconds"] == 60
-    assert flow.get("kk6")["timeout_target"] == "kk20"
+    assert flow.get("kk6")["timeout_target"] == "kk18"
     assert flow.get("kk20")["timeout_seconds"] == 60
-    assert flow.get("kk20")["timeout_target"] == "kk28"
+    assert flow.get("kk20")["timeout_target"] == "kk27"
 
 
 def test_urls_keep_tracking_parameters() -> None:
     flow = load_flow(FLOW_PATH)
-    urls = [
-        button["url"]
-        for node in flow.nodes.values()
-        for button in node.get("buttons", [])
-        if button.get("url")
-    ]
+    urls = collect_urls(flow)
     assert urls
     for url in urls:
         parsed = urlparse(url)
@@ -78,6 +74,23 @@ def test_urls_keep_tracking_parameters() -> None:
         assert query.get("utm_medium") == ["voronka1"]
         assert query.get("utm_campaign") == ["kurs"]
         assert "utm_content" in query
+
+
+def test_markdown_links_are_in_text() -> None:
+    flow = load_flow(FLOW_PATH)
+    markdown_nodes = {"kk25", "kk26", "kk28", "kk31", "kk33", "kk34", "kk35"}
+    for node_id in markdown_nodes:
+        node = flow.get(node_id)
+        assert node["parse_mode"] == "Markdown"
+        assert re.search(r"\[[^\]]+\]\(https://[^)]+\)", node["text"]), node_id
+
+    assert "[курс](" in flow.get("kk25")["text"]
+    assert "[курсе](" in flow.get("kk26")["text"]
+    assert "[курса](" in flow.get("kk28")["text"]
+    assert "[сайте](" in flow.get("kk31")["text"]
+    assert "[Познакомиться с услугами](" in flow.get("kk33")["text"]
+    assert "[Перейти на сайт](" in flow.get("kk34")["text"]
+    assert "[Записаться на курс](" in flow.get("kk35")["text"]
 
 
 def test_media_paths_exist() -> None:
@@ -97,3 +110,13 @@ def test_kk1_sends_guide_pdf_as_document() -> None:
     kk1_media = flow.get("kk1")["media"]
     assert kk1_media == [{"type": "document", "path": "files/guide.pdf"}]
     assert Path("files/guide.pdf").exists()
+
+
+def collect_urls(flow) -> list[str]:
+    urls: list[str] = []
+    for node in flow.nodes.values():
+        for button in node.get("buttons", []) or []:
+            if button.get("url"):
+                urls.append(button["url"])
+        urls.extend(re.findall(r"https://[^)\s]+", node.get("text") or ""))
+    return urls

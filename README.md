@@ -96,6 +96,22 @@ docker compose up -d --build
 docker compose logs -f bot
 ```
 
+Обновление уже запущенного бота после изменений в репозитории:
+
+```bash
+git pull --ff-only
+docker compose build bot
+docker compose up -d --force-recreate bot
+docker compose logs -f bot
+```
+
+Если нужно полностью исключить Docker cache:
+
+```bash
+docker compose build --no-cache --pull bot
+docker compose up -d --force-recreate bot
+```
+
 Остановка:
 
 ```bash

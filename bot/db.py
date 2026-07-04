@@ -204,19 +204,20 @@ class StateStorage:
                 for row in rows
             ]
 
-    def mark_future_message_sent(self, user_id: int, node_id: str) -> None:
+    def mark_future_message_sent(self, message_id: int) -> None:
         now = datetime.now(UTC)
         with self.session_factory() as session:
-            rows = session.scalars(
-                select(FutureMessage).where(
-                    FutureMessage.user_id == user_id,
-                    FutureMessage.node_id == node_id,
-                    FutureMessage.status == "pending",
-                )
-            ).all()
-            for row in rows:
+            row = session.get(FutureMessage, message_id)
+            if row is not None and row.status == "pending":
                 row.status = "sent"
                 row.sent_at = now
+            session.commit()
+
+    def mark_future_message_cancelled(self, message_id: int) -> None:
+        with self.session_factory() as session:
+            row = session.get(FutureMessage, message_id)
+            if row is not None and row.status == "pending":
+                row.status = "cancelled"
             session.commit()
 
     def admin_stats(self, completed_node_ids: set[str], now: datetime | None = None) -> AdminStats:

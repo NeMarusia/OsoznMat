@@ -71,7 +71,6 @@ class FlowEngine:
             )
 
         await send_media(bot, chat_id, node.get("media", []), self.paths.images_dir, self.paths.videos_dir)
-        self.storage.mark_future_message_sent(user_id, node_id)
         self._schedule_timeout(chat_id, user_id, node_id, node)
 
         delay = node.get("delay_seconds")
@@ -106,6 +105,12 @@ class FlowEngine:
 
     async def dispatch_due_future_messages(self, bot: Bot) -> None:
         for future_message in self.storage.due_future_messages(datetime.now(UTC)):
+            state = self.storage.get(future_message.user_id)
+            if future_message.source_node_id and (
+                state is None or state.current_node != future_message.source_node_id
+            ):
+                self.storage.mark_future_message_cancelled(future_message.id)
+                continue
             try:
                 await self.send_node(
                     bot,
@@ -113,6 +118,7 @@ class FlowEngine:
                     future_message.user_id,
                     future_message.node_id,
                 )
+                self.storage.mark_future_message_sent(future_message.id)
             except Exception:
                 logging.exception("Failed to dispatch future message %s", future_message.id)
 

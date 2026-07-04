@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 
 import pytest
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine, inspect, text
 
 from bot.db import StateStorage, User, database_url, init_database
 
@@ -83,9 +83,30 @@ def test_state_storage_marks_future_messages_sent(tmp_path) -> None:
     now = datetime.now(UTC)
 
     storage.schedule_future_message(42, 4242, "kk6", now - timedelta(seconds=1), "kk17")
-    storage.mark_future_message_sent(42, "kk6")
+    future_message = storage.due_future_messages(now)[0]
+    storage.mark_future_message_sent(future_message.id)
 
     assert storage.due_future_messages(now) == []
+
+
+def test_state_storage_marks_future_message_cancelled(tmp_path) -> None:
+    database_path = tmp_path / "bot.sqlite3"
+    init_database(database_path)
+    storage = StateStorage(database_path)
+    now = datetime.now(UTC)
+
+    storage.schedule_future_message(42, 4242, "kk6", now - timedelta(seconds=1), "kk17")
+    future_message = storage.due_future_messages(now)[0]
+    storage.mark_future_message_cancelled(future_message.id)
+
+    assert storage.due_future_messages(now) == []
+    engine = create_engine(database_url(database_path))
+    with engine.connect() as connection:
+        status = connection.execute(
+            text("select status from future_messages where id = :id"),
+            {"id": future_message.id},
+        ).scalar_one()
+    assert status == "cancelled"
 
 
 def test_state_storage_schedules_future_messages_for_admins(tmp_path) -> None:

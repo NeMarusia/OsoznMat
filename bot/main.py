@@ -14,6 +14,7 @@ from bot.config import load_database_path, load_settings
 from bot.db import AdminStats, StateStorage, init_database
 from bot.engine import FlowEngine, RuntimePaths
 from bot.flow_loader import Flow, load_flow, validate_flow
+from bot.keyboards import find_button_text
 
 
 def parse_args() -> argparse.Namespace:
@@ -87,10 +88,15 @@ async def run_bot() -> None:
         await callback_query.answer()
         if not callback_query.message:
             return
+        button_text = find_button_text(callback_query.message.reply_markup, callback_query.data)
+        selected_text = button_text or "выбранный вариант"
         try:
-            await callback_query.message.delete()
+            await callback_query.message.edit_text(
+                text=f'Выбран вариант "{selected_text}"',
+                reply_markup=None,
+            )
         except TelegramBadRequest:
-            logging.exception("Failed to delete message with inline keyboard")
+            logging.exception("Failed to update message with selected button")
         await engine.handle_callback(
             bot,
             callback_query.message.chat.id,

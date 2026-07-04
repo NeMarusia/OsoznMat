@@ -4,8 +4,8 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher, F
-from aiogram.filters import CommandStart
 from aiogram.exceptions import TelegramBadRequest
+from aiogram.filters import Command, CommandStart
 from aiogram.types import CallbackQuery, Message
 
 from bot.config import load_settings
@@ -34,6 +34,12 @@ async def main() -> None:
     @dispatcher.message(CommandStart())
     async def start(message: Message) -> None:
         await engine.start(bot, message)
+
+    @dispatcher.message(Command("status"))
+    async def status(message: Message) -> None:
+        if not message.from_user or message.from_user.id not in settings.admin_user_ids:
+            return
+        await message.answer("Раздел администратора.")
 
     @dispatcher.callback_query(F.data.startswith("goto:"))
     async def callback(callback_query: CallbackQuery) -> None:

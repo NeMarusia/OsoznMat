@@ -13,7 +13,7 @@ nodes:
       - type: document
         path: files/guide.pdf
     timeout_seconds: 86400
-    timeout_target: kk17
+    timeout_target: kk6
     buttons:
       - text: 1 триместр
         target: kk19
@@ -36,7 +36,7 @@ nodes:
 
       Сегодня поделюсь парой советов, но сначала — небольшой опрос. Что волнует тебя больше?
     timeout_seconds: 86400
-    timeout_target: kk18
+    timeout_target: kk20
     buttons:
       - text: Утренняя тошнота
         target: kk10
@@ -149,7 +149,7 @@ nodes:
     correct: kk25
     incorrect: kk26
     timeout_seconds: 86400
-    timeout_target: kk27
+    timeout_target: kk28
 
   kk24:
     id: kk24

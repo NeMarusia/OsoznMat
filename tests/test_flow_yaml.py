@@ -55,11 +55,11 @@ def test_kk20_routes_to_correct_and_incorrect_nodes() -> None:
 def test_ignore_timeouts_are_configured() -> None:
     flow = load_flow(FLOW_PATH)
     assert flow.get("kk1")["timeout_seconds"] == 86400
-    assert flow.get("kk1")["timeout_target"] == "kk17"
+    assert flow.get("kk1")["timeout_target"] == "kk6"
     assert flow.get("kk6")["timeout_seconds"] == 86400
-    assert flow.get("kk6")["timeout_target"] == "kk18"
+    assert flow.get("kk6")["timeout_target"] == "kk20"
     assert flow.get("kk20")["timeout_seconds"] == 86400
-    assert flow.get("kk20")["timeout_target"] == "kk27"
+    assert flow.get("kk20")["timeout_target"] == "kk28"
     assert flow.get("kk17")["delay_seconds"] == 86400
     assert flow.get("kk18")["delay_seconds"] == 86400
     assert flow.get("kk27")["delay_seconds"] == 86400

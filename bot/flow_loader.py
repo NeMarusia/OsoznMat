@@ -33,12 +33,13 @@ def load_flow(path: Path) -> Flow:
     return Flow(start=start, nodes=nodes)
 
 
-def override_timeout_seconds(flow: Flow, timeout_seconds: int) -> Flow:
+def override_timing_seconds(flow: Flow, seconds: int) -> Flow:
     nodes: dict[str, dict[str, Any]] = {}
     for node_id, node in flow.nodes.items():
         nodes[node_id] = dict(node)
-        if "timeout_seconds" in node:
-            nodes[node_id]["timeout_seconds"] = timeout_seconds
+        for field in ("timeout_seconds", "delay_seconds"):
+            if field in node:
+                nodes[node_id][field] = seconds
     return Flow(start=flow.start, nodes=nodes)
 
 

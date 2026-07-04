@@ -112,13 +112,13 @@ nodes:
   kk17:
     id: kk17
     type: timer
-    delay_seconds: 30
+    delay_seconds: 86400
     next: kk6
 
   kk18:
     id: kk18
     type: timer
-    delay_seconds: 30
+    delay_seconds: 86400
     next: kk20
 
   kk19:
@@ -196,7 +196,7 @@ nodes:
   kk27:
     id: kk27
     type: timer
-    delay_seconds: 30
+    delay_seconds: 86400
     next: kk28
 
   kk28:
@@ -214,7 +214,7 @@ nodes:
   kk29:
     id: kk29
     type: timer
-    delay_seconds: 30
+    delay_seconds: 86400
     next: kk30
 
   kk30:

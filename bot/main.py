@@ -13,7 +13,7 @@ from aiogram.types import CallbackQuery, Message
 from bot.config import load_database_path, load_settings
 from bot.db import AdminStats, StateStorage, init_database
 from bot.engine import FlowEngine, RuntimePaths
-from bot.flow_loader import Flow, load_flow, override_timeout_seconds, validate_flow
+from bot.flow_loader import Flow, load_flow, override_timing_seconds, validate_flow
 from bot.keyboards import find_button_text
 
 
@@ -68,7 +68,7 @@ async def run_bot() -> None:
 
     flow = load_flow(settings.flow_path)
     if settings.debug:
-        flow = override_timeout_seconds(flow, 30)
+        flow = override_timing_seconds(flow, 30)
     errors = validate_flow(flow)
     if errors:
         raise RuntimeError("Invalid flow:\n" + "\n".join(errors))

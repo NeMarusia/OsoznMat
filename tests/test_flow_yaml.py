@@ -2,7 +2,7 @@ from pathlib import Path
 import re
 from urllib.parse import parse_qs, urlparse
 
-from bot.flow_loader import load_flow, override_timeout_seconds, validate_flow
+from bot.flow_loader import load_flow, override_timing_seconds, validate_flow
 from bot.main import completed_node_ids
 
 
@@ -60,17 +60,27 @@ def test_ignore_timeouts_are_configured() -> None:
     assert flow.get("kk6")["timeout_target"] == "kk18"
     assert flow.get("kk20")["timeout_seconds"] == 86400
     assert flow.get("kk20")["timeout_target"] == "kk27"
+    assert flow.get("kk17")["delay_seconds"] == 86400
+    assert flow.get("kk18")["delay_seconds"] == 86400
+    assert flow.get("kk27")["delay_seconds"] == 86400
+    assert flow.get("kk29")["delay_seconds"] == 86400
 
 
-def test_override_timeout_seconds_updates_only_timeout_nodes() -> None:
+def test_override_timing_seconds_updates_only_timing_nodes() -> None:
     flow = load_flow(FLOW_PATH)
-    debug_flow = override_timeout_seconds(flow, 30)
+    debug_flow = override_timing_seconds(flow, 30)
 
     assert debug_flow.get("kk1")["timeout_seconds"] == 30
     assert debug_flow.get("kk6")["timeout_seconds"] == 30
     assert debug_flow.get("kk20")["timeout_seconds"] == 30
+    assert debug_flow.get("kk17")["delay_seconds"] == 30
+    assert debug_flow.get("kk18")["delay_seconds"] == 30
+    assert debug_flow.get("kk27")["delay_seconds"] == 30
+    assert debug_flow.get("kk29")["delay_seconds"] == 30
     assert "timeout_seconds" not in debug_flow.get("kk10")
+    assert "delay_seconds" not in debug_flow.get("kk10")
     assert flow.get("kk1")["timeout_seconds"] == 86400
+    assert flow.get("kk17")["delay_seconds"] == 86400
 
 
 def test_urls_keep_tracking_parameters() -> None:

@@ -102,8 +102,6 @@ class StateStorage:
         self.session_factory = sessionmaker(self.engine, expire_on_commit=False, future=True)
 
     def get(self, user_id: int) -> UserState | None:
-        if user_id in self.admin_user_ids:
-            return None
         with self.session_factory() as session:
             user = session.get(User, user_id)
             if user is None:
@@ -116,9 +114,6 @@ class StateStorage:
             )
 
     def set(self, user_id: int, current_node: str, waiting_for: str | None = None) -> None:
-        if user_id in self.admin_user_ids:
-            return
-
         now = datetime.now(UTC)
         with self.session_factory() as session:
             self._upsert_user(session, user_id, current_node, waiting_for, now)
@@ -159,9 +154,6 @@ class StateStorage:
         send_at: datetime,
         source_node_id: str | None = None,
     ) -> None:
-        if user_id in self.admin_user_ids:
-            return
-
         now = datetime.now(UTC)
         with self.session_factory() as session:
             future_message = session.scalar(

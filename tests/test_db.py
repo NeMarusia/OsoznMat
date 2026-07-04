@@ -40,14 +40,18 @@ def test_state_storage_persists_user_state(tmp_path) -> None:
     assert state.last_message_sent_at is not None
 
 
-def test_state_storage_skips_admin_users(tmp_path) -> None:
+def test_state_storage_persists_admin_users(tmp_path) -> None:
     database_path = tmp_path / "bot.sqlite3"
     init_database(database_path)
     storage = StateStorage(database_path, admin_user_ids=(42,))
 
     storage.set(42, "kk1")
 
-    assert storage.get(42) is None
+    state = storage.get(42)
+
+    assert state is not None
+    assert state.user_id == 42
+    assert state.current_node == "kk1"
 
 
 def test_state_storage_schedules_due_future_messages(tmp_path) -> None:
@@ -84,14 +88,17 @@ def test_state_storage_marks_future_messages_sent(tmp_path) -> None:
     assert storage.due_future_messages(now) == []
 
 
-def test_state_storage_does_not_schedule_future_messages_for_admins(tmp_path) -> None:
+def test_state_storage_schedules_future_messages_for_admins(tmp_path) -> None:
     database_path = tmp_path / "bot.sqlite3"
     init_database(database_path)
     storage = StateStorage(database_path, admin_user_ids=(42,))
 
     storage.schedule_future_message(42, 4242, "kk6", datetime.now(UTC), "kk17")
 
-    assert storage.due_future_messages(datetime.now(UTC)) == []
+    due_messages = storage.due_future_messages(datetime.now(UTC) + timedelta(seconds=1))
+
+    assert len(due_messages) == 1
+    assert due_messages[0].user_id == 42
 
 
 def test_state_storage_counts_admin_stats(tmp_path) -> None:

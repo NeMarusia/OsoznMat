@@ -54,6 +54,14 @@ def format_admin_status(stats: AdminStats) -> str:
     )
 
 
+def format_selected_button_message(original_text: str | None, button_text: str | None) -> str:
+    selected_text = button_text or "выбранный вариант"
+    selected_line = f'Выбран вариант "{selected_text}"'
+    if not original_text:
+        return selected_line
+    return f"{original_text}\n\n{selected_line}"
+
+
 async def run_bot() -> None:
     settings = load_settings()
     logging.basicConfig(level=settings.log_level)
@@ -89,10 +97,9 @@ async def run_bot() -> None:
         if not callback_query.message:
             return
         button_text = find_button_text(callback_query.message.reply_markup, callback_query.data)
-        selected_text = button_text or "выбранный вариант"
         try:
             await callback_query.message.edit_text(
-                text=f'Выбран вариант "{selected_text}"',
+                text=format_selected_button_message(callback_query.message.text, button_text),
                 reply_markup=None,
             )
         except TelegramBadRequest:

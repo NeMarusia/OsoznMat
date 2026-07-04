@@ -79,13 +79,15 @@ def test_urls_keep_tracking_parameters() -> None:
 
 def test_markdown_links_are_in_text() -> None:
     flow = load_flow(FLOW_PATH)
-    markdown_nodes = {"kk25", "kk26", "kk28", "kk31", "kk33", "kk34", "kk35"}
+    markdown_nodes = {"kk6", "kk25", "kk26", "kk28", "kk31", "kk33", "kk34", "kk35"}
     for node_id in markdown_nodes:
         node = flow.get(node_id)
         assert node["parse_mode"] == "Markdown"
         assert re.search(r"\[[^\]]+\]\(https://[^)]+\)", node["text"]), node_id
 
     assert "[курс](" in flow.get("kk25")["text"]
+    assert "[курс](" in flow.get("kk6")["text"]
+    assert "utm_content=day1" in flow.get("kk6")["text"]
     assert "[курсе](" in flow.get("kk26")["text"]
     assert "[курса](" in flow.get("kk28")["text"]
     assert "[сайте](" in flow.get("kk31")["text"]

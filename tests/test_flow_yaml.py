@@ -3,6 +3,7 @@ import re
 from urllib.parse import parse_qs, urlparse
 
 from bot.flow_loader import load_flow, validate_flow
+from bot.main import completed_node_ids
 
 
 FLOW_PATH = Path("data/flow.yaml")
@@ -110,6 +111,12 @@ def test_kk1_sends_guide_pdf_as_document() -> None:
     kk1_media = flow.get("kk1")["media"]
     assert kk1_media == [{"type": "document", "path": "files/guide.pdf"}]
     assert Path("files/guide.pdf").exists()
+
+
+def test_completed_node_ids_are_terminal_flow_nodes() -> None:
+    flow = load_flow(FLOW_PATH)
+
+    assert completed_node_ids(flow) == {"kk31", "kk33", "kk34", "kk35", "kk36"}
 
 
 def collect_urls(flow) -> list[str]:

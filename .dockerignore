@@ -4,6 +4,7 @@
 .venv
 __pycache__
 *.pyc
+db/*
+!db/.gitkeep
 storage/*
 !storage/.gitkeep
-

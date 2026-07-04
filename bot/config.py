@@ -6,6 +6,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+DEFAULT_DATABASE_PATH = Path("db/bot.sqlite3")
+
 
 @dataclass(frozen=True)
 class Settings:
@@ -13,6 +15,7 @@ class Settings:
     admin_user_ids: tuple[int, ...]
     flow_path: Path
     database_path: Path
+    future_messages_check_period: int
     images_dir: Path
     videos_dir: Path
     log_level: str = "INFO"
@@ -31,6 +34,16 @@ def parse_admin_user_ids(raw_value: str) -> tuple[int, ...]:
     return tuple(user_ids)
 
 
+def parse_positive_int(raw_value: str, variable_name: str) -> int:
+    try:
+        value = int(raw_value)
+    except ValueError as error:
+        raise RuntimeError(f"{variable_name} must be an integer") from error
+    if value <= 0:
+        raise RuntimeError(f"{variable_name} must be greater than zero")
+    return value
+
+
 def load_settings() -> Settings:
     load_dotenv()
     token = os.getenv("BOT_TOKEN", "")
@@ -41,8 +54,17 @@ def load_settings() -> Settings:
         bot_token=token,
         admin_user_ids=parse_admin_user_ids(os.getenv("BOT_ADMIN_USERS", "")),
         flow_path=Path(os.getenv("FLOW_PATH", "data/flow.yaml")),
-        database_path=Path(os.getenv("DATABASE_PATH", "storage/bot.sqlite3")),
+        database_path=load_database_path(),
+        future_messages_check_period=parse_positive_int(
+            os.getenv("FUTURE_MESSAGES_CHECK_PERIOD", "60"),
+            "FUTURE_MESSAGES_CHECK_PERIOD",
+        ),
         images_dir=Path(os.getenv("IMAGES_DIR", "images")),
         videos_dir=Path(os.getenv("VIDEOS_DIR", "videos")),
         log_level=os.getenv("LOG_LEVEL", "INFO"),
     )
+
+
+def load_database_path() -> Path:
+    load_dotenv()
+    return Path(os.getenv("DATABASE_PATH", str(DEFAULT_DATABASE_PATH)))

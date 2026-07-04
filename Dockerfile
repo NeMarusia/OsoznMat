@@ -10,5 +10,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "-m", "bot.main"]
+VOLUME ["/app/db"]
 
+CMD ["python", "-m", "bot.main"]

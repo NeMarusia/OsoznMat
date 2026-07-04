@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
+import logging
 from pathlib import Path
 
 from aiogram import Bot
@@ -69,35 +71,52 @@ class FlowEngine:
             )
 
         await send_media(bot, chat_id, node.get("media", []), self.paths.images_dir, self.paths.videos_dir)
-        self._schedule_timeout(bot, chat_id, user_id, node_id, node)
+        self.storage.mark_future_message_sent(user_id, node_id)
+        self._schedule_timeout(chat_id, user_id, node_id, node)
 
         delay = node.get("delay_seconds")
         next_node = node.get("next")
         if isinstance(delay, int) and next_node:
-            await asyncio.sleep(delay)
-            state = self.storage.get(user_id)
-            if state and state.current_node == node_id:
-                await self.send_node(bot, chat_id, user_id, next_node)
+            self._schedule_delayed_transition(chat_id, user_id, node_id, next_node, delay)
         elif next_node and not node.get("buttons") and not node.get("input_handler") and not node.get("text_target"):
             await self.send_node(bot, chat_id, user_id, next_node)
 
-    def _schedule_timeout(self, bot: Bot, chat_id: int, user_id: int, node_id: str, node: dict) -> None:
+    def _schedule_timeout(self, chat_id: int, user_id: int, node_id: str, node: dict) -> None:
         timeout = node.get("timeout_seconds")
         target = node.get("timeout_target")
         if not isinstance(timeout, int) or not target:
             return
-        asyncio.create_task(self._send_timeout_node(bot, chat_id, user_id, node_id, timeout, target))
+        self._schedule_delayed_transition(chat_id, user_id, node_id, target, timeout)
 
-    async def _send_timeout_node(
+    def _schedule_delayed_transition(
         self,
-        bot: Bot,
         chat_id: int,
         user_id: int,
         source_node_id: str,
-        timeout: int,
         target_node_id: str,
+        delay_seconds: int,
     ) -> None:
-        await asyncio.sleep(timeout)
-        state = self.storage.get(user_id)
-        if state and state.current_node == source_node_id:
-            await self.send_node(bot, chat_id, user_id, target_node_id)
+        self.storage.schedule_future_message(
+            user_id=user_id,
+            chat_id=chat_id,
+            node_id=target_node_id,
+            send_at=datetime.now(UTC) + timedelta(seconds=delay_seconds),
+            source_node_id=source_node_id,
+        )
+
+    async def dispatch_due_future_messages(self, bot: Bot) -> None:
+        for future_message in self.storage.due_future_messages(datetime.now(UTC)):
+            try:
+                await self.send_node(
+                    bot,
+                    future_message.chat_id,
+                    future_message.user_id,
+                    future_message.node_id,
+                )
+            except Exception:
+                logging.exception("Failed to dispatch future message %s", future_message.id)
+
+    async def run_future_message_dispatcher(self, bot: Bot, check_period_seconds: int) -> None:
+        while True:
+            await self.dispatch_due_future_messages(bot)
+            await asyncio.sleep(check_period_seconds)

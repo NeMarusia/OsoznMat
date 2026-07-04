@@ -4,9 +4,8 @@ services:
     env_file:
       - .env
     volumes:
-      - ./storage:/app/storage
+      - ./db:/app/db
       - ./images:/app/images:ro
       - ./videos:/app/videos:ro
       - ./data:/app/data:ro
     restart: unless-stopped
-

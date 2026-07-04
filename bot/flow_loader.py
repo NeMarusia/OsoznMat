@@ -33,6 +33,15 @@ def load_flow(path: Path) -> Flow:
     return Flow(start=start, nodes=nodes)
 
 
+def override_timeout_seconds(flow: Flow, timeout_seconds: int) -> Flow:
+    nodes: dict[str, dict[str, Any]] = {}
+    for node_id, node in flow.nodes.items():
+        nodes[node_id] = dict(node)
+        if "timeout_seconds" in node:
+            nodes[node_id]["timeout_seconds"] = timeout_seconds
+    return Flow(start=flow.start, nodes=nodes)
+
+
 def validate_flow(flow: Flow) -> list[str]:
     errors: list[str] = []
     if flow.start not in flow.nodes:

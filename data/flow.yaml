@@ -12,7 +12,7 @@ nodes:
     media:
       - type: document
         path: files/guide.pdf
-    timeout_seconds: 60
+    timeout_seconds: 86400
     timeout_target: kk17
     buttons:
       - text: 1 триместр
@@ -35,7 +35,7 @@ nodes:
       Если узнали себя — вы не одна. Именно поэтому я создала [курс](https://osoznannoematerinstvo.tilda.ws/?utm_source=bot&utm_medium=voronka1&utm_campaign=kurs&utm_content=day1), где мы разбираем всё по полочкам: от гормонального процесса до первого месяца с малышом.
 
       Сегодня поделюсь парой советов, но сначала — небольшой опрос. Что волнует тебя больше?
-    timeout_seconds: 60
+    timeout_seconds: 86400
     timeout_target: kk18
     buttons:
       - text: Утренняя тошнота
@@ -148,7 +148,7 @@ nodes:
     input_handler: kk20_answer
     correct: kk25
     incorrect: kk26
-    timeout_seconds: 60
+    timeout_seconds: 86400
     timeout_target: kk27
 
   kk24:

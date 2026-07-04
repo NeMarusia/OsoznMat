@@ -15,6 +15,7 @@ class Settings:
     admin_user_ids: tuple[int, ...]
     flow_path: Path
     database_path: Path
+    debug: bool
     future_messages_check_period: int
     images_dir: Path
     videos_dir: Path
@@ -44,6 +45,10 @@ def parse_positive_int(raw_value: str, variable_name: str) -> int:
     return value
 
 
+def parse_debug(raw_value: str) -> bool:
+    return raw_value == "1"
+
+
 def load_settings() -> Settings:
     load_dotenv()
     token = os.getenv("BOT_TOKEN", "")
@@ -55,6 +60,7 @@ def load_settings() -> Settings:
         admin_user_ids=parse_admin_user_ids(os.getenv("BOT_ADMIN_USERS", "")),
         flow_path=Path(os.getenv("FLOW_PATH", "data/flow.yaml")),
         database_path=load_database_path(),
+        debug=parse_debug(os.getenv("DEBUG", "")),
         future_messages_check_period=parse_positive_int(
             os.getenv("FUTURE_MESSAGES_CHECK_PERIOD", "60"),
             "FUTURE_MESSAGES_CHECK_PERIOD",

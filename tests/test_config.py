@@ -1,6 +1,6 @@
 import pytest
 
-from bot.config import parse_admin_user_ids, parse_positive_int
+from bot.config import parse_admin_user_ids, parse_debug, parse_positive_int
 
 
 def test_parse_admin_user_ids_accepts_comma_separated_values() -> None:
@@ -28,3 +28,9 @@ def test_parse_positive_int_rejects_zero() -> None:
 def test_parse_positive_int_rejects_non_integer() -> None:
     with pytest.raises(RuntimeError, match="must be an integer"):
         parse_positive_int("minute", "FUTURE_MESSAGES_CHECK_PERIOD")
+
+
+def test_parse_debug_is_enabled_only_by_one() -> None:
+    assert parse_debug("1") is True
+    assert parse_debug("0") is False
+    assert parse_debug("") is False

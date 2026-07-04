@@ -13,7 +13,7 @@ from aiogram.types import CallbackQuery, Message
 from bot.config import load_database_path, load_settings
 from bot.db import AdminStats, StateStorage, init_database
 from bot.engine import FlowEngine, RuntimePaths
-from bot.flow_loader import Flow, load_flow, validate_flow
+from bot.flow_loader import Flow, load_flow, override_timeout_seconds, validate_flow
 from bot.keyboards import find_button_text
 
 
@@ -67,6 +67,8 @@ async def run_bot() -> None:
     logging.basicConfig(level=settings.log_level)
 
     flow = load_flow(settings.flow_path)
+    if settings.debug:
+        flow = override_timeout_seconds(flow, 30)
     errors = validate_flow(flow)
     if errors:
         raise RuntimeError("Invalid flow:\n" + "\n".join(errors))
@@ -116,8 +118,11 @@ async def run_bot() -> None:
         await engine.handle_text(bot, message)
 
     await engine.dispatch_due_future_messages(bot)
+    future_messages_check_period = settings.future_messages_check_period
+    if settings.debug:
+        future_messages_check_period = min(future_messages_check_period, 1)
     future_messages_task = asyncio.create_task(
-        engine.run_future_message_dispatcher(bot, settings.future_messages_check_period)
+        engine.run_future_message_dispatcher(bot, future_messages_check_period)
     )
     try:
         await dispatcher.start_polling(bot)
